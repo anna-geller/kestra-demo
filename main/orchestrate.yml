@@ -1,0 +1,30 @@
+id: orchestrate
+namespace: prod
+tasks:
+  - id: parallel
+    type: io.kestra.core.tasks.flows.Parallel
+    tasks:
+      - id: ingestion1
+        type: io.kestra.core.tasks.flows.Flow
+
+      - id: ingestion2
+        type: io.kestra.core.tasks.flows.Flow
+
+  - id: transform
+    type: io.kestra.core.tasks.flows.Flow
+
+  - id: powerBI
+    type: io.kestra.core.tasks.flows.Flow
+
+taskDefaults:
+  - type: io.kestra.core.tasks.flows.Flow
+    values:
+      flowId: "{{task.id}}"
+      namespace: prod
+      wait: true
+      transmitFailed: true
+
+triggers:
+  - id: every6hours
+    type: io.kestra.core.models.triggers.types.Schedule
+    cron: 0 */6 * * *

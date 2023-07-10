@@ -1,0 +1,28 @@
+id: parentFlowDAG
+namespace: prod
+tasks:
+  - id: DAG
+    type: io.kestra.core.tasks.flows.Dag
+    tasks:
+      - task:
+          id: dataProduct1
+          type: io.kestra.core.tasks.flows.Flow
+
+      - task:
+          id: dataProduct2
+          type: io.kestra.core.tasks.flows.Flow
+
+      - task:
+          id: dataProduct3
+          type: io.kestra.core.tasks.flows.Flow
+        dependsOn:
+          - dataProduct1
+          - dataProduct2
+
+taskDefaults:
+  - type: io.kestra.core.tasks.flows.Flow
+    values:
+      flowId: "{{task.id}}"
+      namespace: prod.dummy
+      wait: true
+      transmitFailed: true

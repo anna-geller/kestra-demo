@@ -1,0 +1,22 @@
+id: dataProduct1
+namespace: prod
+description: upload to Blob storage, then run dbtCloud job + send alert on failure
+tasks:
+  - id: extract
+    type: io.kestra.plugin.fs.http.Download
+    uri: https://raw.githubusercontent.com/kestra-io/examples/main/datasets/employees00.csv
+
+  - id: uploadToBlob
+    type: io.kestra.plugin.azure.storage.blob.Upload
+    endpoint: "https://kestra.blob.core.windows.net"
+    connectionString: "{{secret('AZURE_CONNECTION_STRING')}}"
+    container: stage # aka bucket name
+    from: "{{outputs.extract.uri}}"
+    name: raw/employees00.csv
+
+  - id: dbtCloudJob
+    type: io.kestra.plugin.dbt.cloud.TriggerRun
+    accountId: "179536"
+    token: "{{secret('DBT_CLOUD_API_TOKEN')}}"
+    jobId: "366381"
+    wait: true

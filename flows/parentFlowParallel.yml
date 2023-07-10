@@ -1,0 +1,22 @@
+id: parentFlowParallel
+namespace: prod
+tasks:
+  - id: parallel
+    type: io.kestra.core.tasks.flows.Parallel
+    tasks:
+      - id: dataProduct1
+        type: io.kestra.core.tasks.flows.Flow
+
+      - id: dataProduct2
+        type: io.kestra.core.tasks.flows.Flow
+
+  - id: dataProduct3
+    type: io.kestra.core.tasks.flows.Flow
+
+taskDefaults:
+  - type: io.kestra.core.tasks.flows.Flow
+    values:
+      flowId: "{{task.id}}"
+      namespace: prod
+      wait: true
+      transmitFailed: true

@@ -1,0 +1,21 @@
+id: slackSuccessNotification
+namespace: prod.monitoring
+description: This flow sends a Slack message any time a flow from the `prod.notify` namespace finishes successfully.
+
+tasks:
+  - id: send
+    type: io.kestra.plugin.notifications.slack.SlackExecution
+    url: "{{secret('SLACK_WEBHOOK')}}"
+    channel: "#general"
+    executionId: "{{trigger.executionId}}"
+
+triggers:
+  - id: listen
+    type: io.kestra.core.models.triggers.types.Flow
+    conditions:
+      - type: io.kestra.core.models.conditions.types.ExecutionStatusCondition
+        in:
+          - SUCCESS
+      - type: io.kestra.core.models.conditions.types.ExecutionNamespaceCondition
+        namespace: prod.notify
+        prefix: true

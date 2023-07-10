@@ -1,0 +1,15 @@
+id: ingestion1
+namespace: prod
+description: extract and load using Azure Blob Storage and Snowflake
+tasks:
+  - id: extract
+    type: io.kestra.plugin.fs.http.Download
+    uri: https://raw.githubusercontent.com/kestra-io/examples/main/datasets/employees00.csv
+
+  - id: uploadToBlob
+    type: io.kestra.plugin.azure.storage.blob.Upload
+    endpoint: "https://kestra.blob.core.windows.net"
+    connectionString: "{{secret('AZURE_CONNECTION_STRING')}}"
+    container: stage
+    from: "{{outputs.extract.uri}}"
+    name: raw/employees00.csv

@@ -1,0 +1,6 @@
+id: dataProduct3
+namespace: prod.dummy
+tasks:
+  - id: hello
+    type: io.kestra.core.tasks.log.Log
+    message: hello from {{flow.id}}

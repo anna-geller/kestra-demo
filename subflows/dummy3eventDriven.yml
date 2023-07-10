@@ -1,0 +1,27 @@
+id: dataProduct3eventDriven
+namespace: prod.dummy
+tasks:
+  - id: hello
+    type: io.kestra.core.tasks.log.Log
+    message: hello from {{flow.id}}
+
+triggers:
+  - id: dataProductsTrigger
+    type: io.kestra.core.models.triggers.types.Flow
+    conditions:
+      - type: io.kestra.core.models.conditions.types.ExecutionStatusCondition
+        in:
+          - SUCCESS
+      - id: dataProducts
+        type: io.kestra.core.models.conditions.types.MultipleCondition
+        window: P1D
+        windowAdvance: P0D
+        conditions:
+          dataProduct1:
+            type: io.kestra.core.models.conditions.types.ExecutionFlowCondition
+            namespace: prod.dummy
+            flowId: dataProduct1
+          dataProduct2:
+            type: io.kestra.core.models.conditions.types.ExecutionFlowCondition
+            namespace: prod.dummy
+            flowId: dataProduct2

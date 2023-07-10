@@ -1,0 +1,11 @@
+id: powerBI
+namespace: prod.dummy
+tasks:
+  - id: powerBI
+    type: io.kestra.plugin.powerbi.RefreshGroupDataset
+    clientId: yourClientId
+    clientSecret: yourClientSecret
+    tenantId: yourTenantId
+    groupId: yourGroupId
+    datasetId: yourDatasetId
+    wait: true

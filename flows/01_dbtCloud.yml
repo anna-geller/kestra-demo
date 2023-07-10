@@ -1,0 +1,9 @@
+id: dbtCloud
+namespace: prod
+tasks:
+  - id: dbtCloudJob
+    type: io.kestra.plugin.dbt.cloud.TriggerRun
+    accountId: "179536"
+    token: "{{secret('DBT_CLOUD_API_TOKEN')}}"
+    jobId: "366381"
+    wait: true

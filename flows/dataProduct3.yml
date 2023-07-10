@@ -1,0 +1,19 @@
+id: dataProduct3
+namespace: prod
+description: dbt Cloud + powerBI refresh + alert on failure
+tasks:
+  - id: dbtCloudJob
+    type: io.kestra.plugin.dbt.cloud.TriggerRun
+    accountId: "179536"
+    token: "{{secret('DBT_CLOUD_API_TOKEN')}}"
+    jobId: "366381"
+    wait: true
+
+  - id: powerBI
+    type: io.kestra.plugin.powerbi.RefreshGroupDataset
+    clientId: yourClientId
+    clientSecret: yourClientSecret
+    tenantId: yourTenantId
+    groupId: yourGroupId
+    datasetId: yourDatasetId
+    wait: true

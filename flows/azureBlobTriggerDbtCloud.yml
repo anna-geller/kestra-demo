@@ -1,0 +1,42 @@
+id: azureBlobTriggerDbtCloud
+namespace: prod
+description: |
+  When a new file arrives in Azure Blog Storage container, process that file and then start a dbt Cloud job. 
+  Send a Teams/Slack notification if something fails.
+  The `.[]` in `jq('.[].uri')` says to `jq` to iterate over this array. 
+  Then, for each array element, it's extracting the value of the key `uri`.
+  
+
+tasks:
+  - id: each
+    type: io.kestra.core.tasks.flows.EachSequential
+    value: "{{ trigger.blobs | jq('.[].uri') }}"
+    tasks:
+      - id: loadToInternalStage
+        type: io.kestra.plugin.jdbc.snowflake.Upload
+        from: "{{taskrun.value}}"
+        fileName: "{{taskrun.value}}"
+        prefix: raw
+        stageName: "@kestra.public.%employees"
+        compress: true
+
+  - id: dbtCloudJob
+    type: io.kestra.plugin.dbt.cloud.TriggerRun
+    accountId: "{{envs.dbt_cloud_account_id}}"
+    token: "{{envs.dbt_cloud_api_token}}"
+    jobId: "366381"
+    wait: true
+    disabled: true
+
+triggers:
+  - id: watch
+    type: io.kestra.plugin.azure.storage.blob.Trigger
+    interval: PT1S
+    endpoint: "https://kestra.blob.core.windows.net"
+    connectionString: "{{secret('AZURE_CONNECTION_STRING')}}"
+    container: "stage"
+    prefix: "raw/"
+    action: MOVE
+    moveTo:
+      container: stage
+      name: archive/raw/

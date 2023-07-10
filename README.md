@@ -1,2 +1,1 @@
-# kestra-demo
-Example Kestra project
+# Demo of Kestra

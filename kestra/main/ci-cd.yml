@@ -1,0 +1,21 @@
+id: ci-cd
+namespace: prod
+variables:
+  host: "https://demo.kestra.io/"
+  auth: "cicd:{{secret('CI_CD_PASSWORD')}}" # cicd is a username - syntax is username:password
+tasks:
+  - id: deploy
+    type: io.kestra.core.tasks.flows.WorkingDirectory
+    tasks:
+      - id: cloneRepository
+        type: io.kestra.plugin.git.Clone
+        url: https://github.com/anna-geller/kestra-ci-cd
+      - id: validateFlows
+        type: io.kestra.core.tasks.scripts.Bash
+        commands:
+          - /app/kestra-ee flow validate flows/ --server={{vars.host}} --user={{vars.auth}}
+      - id: deployFlows
+        type: io.kestra.core.tasks.scripts.Bash
+        commands:
+          - /app/kestra-ee flow namespace update prod flows/prod/ --no-delete --server={{vars.host}} --user={{vars.auth}}
+          - /app/kestra-ee flow namespace update prod.marketing flows/prod.marketing/ --no-delete --server={{vars.host}} --user={{vars.auth}}

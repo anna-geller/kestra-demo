@@ -38,6 +38,14 @@ resource "kestra_flow" "main" {
   keep_original_source = true
 }
 
+resource "kestra_flow" "monitoring" {
+  for_each             = fileset(path.module, "kestra/monitoring/*.yml")
+  flow_id              = yamldecode(templatefile(each.value, {}))["id"]
+  namespace            = yamldecode(templatefile(each.value, {}))["namespace"]
+  content              = templatefile(each.value, {})
+  keep_original_source = true
+}
+
 resource "kestra_namespace_secret" "github_pat" {
   namespace    = "prod"
   secret_key   = "GITHUB_PAT"
